@@ -1,3 +1,4 @@
+#!/bin/env node
 //  OpenShift sample Node application
 var express = require('express');
 var fs      = require('fs');
@@ -38,9 +39,7 @@ var SampleApp = function() {
      */
     self.populateCache = function() {
         if (typeof self.zcache === "undefined") {
-            self.zcache = {
-                'index.html': ''
-            };
+            self.zcache = { 'index.html': '' };
         }
 
         //  Local cache for static content.
@@ -52,9 +51,7 @@ var SampleApp = function() {
      *  Retrieve entry (content) from cache.
      *  @param {string} key  Key identifying content to retrieve from cache.
      */
-    self.cache_get = function(key) {
-        return self.zcache[key];
-    };
+    self.cache_get = function(key) { return self.zcache[key]; };
 
 
     /**
@@ -64,9 +61,9 @@ var SampleApp = function() {
      */
     self.terminator = function(sig){
         if (typeof sig === "string") {
-            console.log('%s: Received %s - terminating sample app ...',
-                Date(Date.now()), sig);
-            process.exit(1);
+           console.log('%s: Received %s - terminating sample app ...',
+                       Date(Date.now()), sig);
+           process.exit(1);
         }
         console.log('%s: Node server stopped.', Date(Date.now()) );
     };
@@ -77,17 +74,13 @@ var SampleApp = function() {
      */
     self.setupTerminationHandlers = function(){
         //  Process on exit and signals.
-        process.on('exit', function() {
-            self.terminator();
-        });
+        process.on('exit', function() { self.terminator(); });
 
         // Removed 'SIGPIPE' from the list - bugz 852598.
         ['SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
-        'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'
+         'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'
         ].forEach(function(element, index, array) {
-            process.on(element, function() {
-                self.terminator(element);
-            });
+            process.on(element, function() { self.terminator(element); });
         });
     };
 
@@ -149,7 +142,7 @@ var SampleApp = function() {
         //  Start the app on the specific interface (and port).
         self.app.listen(self.port, self.ipaddress, function() {
             console.log('%s: Node server started on %s:%d ...',
-                Date(Date.now() ), self.ipaddress, self.port);
+                        Date(Date.now() ), self.ipaddress, self.port);
         });
     };
 
@@ -161,37 +154,6 @@ var SampleApp = function() {
  *  main():  Main code.
  */
 var zapp = new SampleApp();
-//zapp.initialize();
-//zapp.start();
-var app = require('express')();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+zapp.initialize();
+zapp.start();
 
-
-
-app.get('/', function(req, res){
-    res.sendfile('index.html');
-});
-
-
-io.on('connection', function(socket){
-    console.log('a user connected');
-    socket.on('disconnect', function(){
-        console.log('user disconnected');
-    });
-    socket.on('chat message', function(msg){
-        var msg = msg.replace(/(<([^>]+)>)/ig,"");
-        socket.broadcast.emit('chat message', msg);
-    });
-    socket.on('is typing', function(msg){
-        socket.broadcast.emit('is typing');
-    });
-    socket.on('stopped typing', function(msg){
-        socket.broadcast.emit('stopped typing');
-    });
-});
-
-
-http.listen(3000, function(){
-    console.log('listening on *:3000');
-});
