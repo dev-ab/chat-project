@@ -1,0 +1,15 @@
+{
+  "name": "chat-project",
+  "subdomain": "chat-project",
+  "scripts": {
+    "start": "index.js"
+  },
+  "version": "1.0.0-11",
+  "engines": {
+    "node": "0.10.x"
+  },
+  "dependencies": {
+    "socket.io": "1.0.x",
+    "express": "4.8.x"
+  }
+}
